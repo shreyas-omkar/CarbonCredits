@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
@@ -8,7 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
+
 export default function Login() {
+
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,13 +27,15 @@ export default function Login() {
     try {
       const response = await axios.post('/api/auth/login', { email, password });
       console.log('Login successful:', response.data);
-      router.push('/dashboard');
+      const userId = response.data.userId;  // get userId from response
+      router.push(`/dashboard/${userId}`);  // pass userId in URL
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
+
   }
 
   return (

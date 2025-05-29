@@ -1,6 +1,5 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
-import { generateTokenAndSetCookeies } from "../utils/generateTokenAndSetCookie.js";
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendPasswordResetSuccessEmail } from "../sendgrid/sendgrid.controller.js";
 import crypto from "crypto";
 import { verifyToken } from "../middlewares/verifyToken.js";

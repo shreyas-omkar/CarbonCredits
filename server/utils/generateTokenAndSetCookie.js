@@ -1,13 +1,17 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import { cookies as nextCookies } from 'next/headers';
 
-export const generateTokenAndSetCookeies = (res, userId) => {
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('token', token, { 
-        httpOnly: false, 
-        sameSite: 'lax',  // Loosen for development
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
-        secure: false // Ensure HTTPS in production
-    });
+export const generateTokenAndSetCookies = async (res, userId) => {
+  const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    return token;
-}
+  const cookies = await nextCookies();
+  cookies.set('token', token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV !== 'development', // true in production
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60,
+  });
+
+  return token;
+};

@@ -1,4 +1,5 @@
 import Hero from '../public/hero.jpg';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -20,9 +21,9 @@ export default function Home() {
         <p className="mb-10 text-lg text-green-300">
           Join the movement to reduce emissions and reward sustainability.
         </p>
-        <button className="w-max px-8 py-3 border-2 border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-black transition">
+        <Link href={'/signup'} className="w-max px-8 py-3 border-2 border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-black transition">
           Sign In
-        </button>
+        </Link>
       </section>
     </main>
   );

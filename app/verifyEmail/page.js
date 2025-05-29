@@ -6,15 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useRouter } from "next/navigation";
+
 
 export default function EmailVerification() {
+
+  const router = useRouter();
+
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
-    ea43739a9b3cbd8f45646bea213f5f3f
-    zwsl_ld1vx_cvyB1e6y9ehlpGMRJnQpsZuoIXJAIBGZKnMQUjA8TecnAlXaGz4ujEk8zYg2So5r4OIuUKzKRRQ
     e.preventDefault();
 
     if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
@@ -26,10 +29,9 @@ export default function EmailVerification() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/auth/verify-otp', { otp });
+      const response = await axios.post('/api/auth/verifyEmail', { verificationToken: otp });
       console.log('OTP verification success:', response.data);
-      // Optionally redirect or show success message here
-      router.push('/dashboard')
+      router.push('/login')
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Verification failed. Please try again.');

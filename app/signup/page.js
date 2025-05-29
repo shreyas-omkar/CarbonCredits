@@ -1,5 +1,6 @@
-'use client';
-import Link from 'next/link';
+"use client";
+import Link from 'next/link'
+import { useRouter } from "next/navigation";
 import { useState } from 'react';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
@@ -8,8 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function Signup() {
+
+  const router = useRouter();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [mmwid, setMMWID] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,8 +33,18 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const formData = { name, email, password, confirmPassword };
-      const response = await axios.post('/api/auth/signup', formData);
+      let age = 1;
+      const formData = {
+        username: username,
+        fullname: name,
+        email,
+        password,
+        age: age, // or get from user input
+        confirmPassword,
+        mmwid: mmwid,
+      };
+
+      const response = await axios.post('/api/auth/register', formData);
 
       console.log('Signup successful:', response.data);
       router.push('/verifyEmail');
@@ -70,6 +86,19 @@ export default function Signup() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="username"
+                placeholder="your_unique_username"
+                className="bg-transparent border border-green-600 text-green-100 focus:ring-green-500"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -105,6 +134,19 @@ export default function Signup() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Meta Mask Wallet ID</Label>
+              <Input
+                id="mmwid"
+                type="mmwid"
+                placeholder="0xfu1234abcd5678ef9012 ..."
+                className="bg-transparent border border-green-600 text-green-100 focus:ring-green-500"
+                required
+                value={mmwid}
+                onChange={(e) => setMMWID(e.target.value)}
                 disabled={loading}
               />
             </div>
