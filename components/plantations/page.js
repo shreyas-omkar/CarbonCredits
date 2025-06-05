@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoaderCircle, CheckCircle } from "lucide-react";
+import Tesseract from "tesseract.js";
 
 export default function Plantation({ userID }) {
   const [image, setImage] = useState(null);
@@ -28,11 +29,10 @@ export default function Plantation({ userID }) {
     setResultMessage("");
 
     try {
-      const formData = new FormData();
-      formData.append("receipt", image);
+      const { data: { text } } = await Tesseract.recognize(image, "eng");
 
-      const res = await axios.post(`/api/dashboard/plantation/${userID}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const res = await axios.post(`/api/dashboard/plantation/${userID}`, {
+        text, // send only text now
       });
 
       const { confidence, estimatedSaplings, carbonCredits, message, success } = res.data;

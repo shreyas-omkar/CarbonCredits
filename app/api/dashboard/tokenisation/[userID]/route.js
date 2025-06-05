@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/server/utils/mongo';
 import User from '@/server/models/user.model';
-import Tesseract from 'tesseract.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import path from 'path';
-
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -43,32 +40,17 @@ ${text}
 
 export async function POST(req, { params }) {
   await connectToDatabase();
-  params = await params;
-  const { userID } = params;
+  const { userID } = await params;
 
   try {
-    const formData = await req.formData();
-    const certificate = formData.get("certificate");
-    const source = formData.get("source") || "Unknown";
+    const { text, source = "Unknown" } = await req.json();
 
-    if (!certificate || !certificate.arrayBuffer) {
-      return NextResponse.json({ error: 'Missing certificate file' }, { status: 400 });
+    if (!text || typeof text !== "string") {
+      return NextResponse.json({ error: 'Missing or invalid OCR text' }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await certificate.arrayBuffer());
-
-    const workerPath = path.resolve(
-        process.cwd(),
-        'node_modules/tesseract.js/src/worker-script/node/index.js'
-      );
-    // OCR
-    const ocrResult = await Tesseract.recognize(buffer, 'eng',{
-      workerPath,
-    });
-    const extractedText = ocrResult.data.text;
-
-    // Gemini LLM Validation
-    const { confidence, reason, carbonCredits } = await evaluateCertificate(extractedText);
+    // Evaluate text using Gemini
+    const { confidence, reason, carbonCredits } = await evaluateCertificate(text);
     const tokensIssued = confidence >= 0.75 ? carbonCredits * 100 : 0;
 
     const user = await User.findById(userID);
@@ -76,7 +58,7 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Append to tokenisations
+    // Update user token data
     user.tokenisations.push({
       carbonCredits,
       tokensIssued,
@@ -91,7 +73,6 @@ export async function POST(req, { params }) {
 
     return NextResponse.json({
       success: true,
-      certificateName: certificate.name,
       confidence,
       reason,
       carbonCredits,
@@ -107,8 +88,7 @@ export async function POST(req, { params }) {
 
 export async function GET(req, { params }) {
   await connectToDatabase();
-  params = await params;
-  const { userID } = params;
+  const { userID } = await params;
 
   if (!userID) {
     return NextResponse.json({ error: 'Missing userID' }, { status: 400 });

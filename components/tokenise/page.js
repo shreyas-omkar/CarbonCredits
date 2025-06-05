@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Tesseract from "tesseract.js";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export default function TokenizeCarbon({ userID }) {
           setTrackingPurchased(data.trackingPurchased);
           const tokens = data.tokenisations || [];
           if (tokens.length > 0) {
-            const latest = tokens[tokens.length - 1]; // Show most recent
+            const latest = tokens[tokens.length - 1];
             setLatestTokenisation(latest);
           }
         } else {
@@ -41,6 +42,13 @@ export default function TokenizeCarbon({ userID }) {
     fetchUserTokenStatus();
   }, [userID]);
 
+  const extractTextFromImage = async (file) => {
+    const { data } = await Tesseract.recognize(file, "eng", {
+      logger: (m) => console.log(m),
+    });
+    return data.text;
+  };
+
   const handleMint = async () => {
     if (!certificate) {
       alert("Please upload a carbon credit certificate.");
@@ -51,13 +59,17 @@ export default function TokenizeCarbon({ userID }) {
     setSuccess(false);
 
     try {
-      const formData = new FormData();
-      formData.append("certificate", certificate);
-      if (source) formData.append("source", source);
+      // OCR in browser
+      const text = await extractTextFromImage(certificate);
 
+      // Send extracted text to backend
       const res = await fetch(`/api/dashboard/tokenisation/${userID}`, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text,
+          source: source || "Unknown",
+        }),
       });
 
       if (!res.ok) {
@@ -107,7 +119,7 @@ export default function TokenizeCarbon({ userID }) {
               <>
                 <Input
                   type="file"
-                  accept=".pdf,.png,.jpg,.jpeg"
+                  accept=".png,.jpg,.jpeg"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) setCertificate(file);
