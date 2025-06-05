@@ -1,4 +1,3 @@
-
 import connectToDatabase from '@/server/utils/mongo.js';
 import User from '@/server/models/user.model';
 import bcrypt from 'bcryptjs';
@@ -9,7 +8,18 @@ export async function POST(req) {
   try {
     await connectToDatabase();
     const body = await req.json();
-    const { username, fullname, email, password, age, mmwid } = body;
+
+    const { username, companyName, fullname, email, password, age, mmwid } = body;
+
+    console.log('Register Request:', { username, companyName, fullname, email, age, mmwid });
+
+    if (!companyName || companyName.trim() === '') {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Company name is required.' }),
+        { status: 400 }
+      );
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return new Response(
@@ -23,6 +33,7 @@ export async function POST(req) {
 
     const newUser = new User({
       username,
+      companyName,
       fullname,
       email,
       password: hashedPassword,
@@ -33,18 +44,17 @@ export async function POST(req) {
       lastLoggedIn: Date.now(),
     });
 
-    await newUser.save();
+    const savedUser = await newUser.save();
+
+    // ✅ Corrected the property here
+    console.log('User saved successfully with company:', savedUser.companyName);
+    console.log(JSON.stringify(savedUser, null, 2)); // Pretty print full saved doc
 
     await sendVerificationEmail(email, verificationToken);
-
-    // Generate JWT token & set cookie (inside server context)
-    await generateTokenAndSetCookies(newUser._id);
+    await generateTokenAndSetCookies(savedUser._id);
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'User registered successfully',
-      }),
+      JSON.stringify({ success: true, message: 'User registered successfully' }),
       { status: 200 }
     );
   } catch (err) {

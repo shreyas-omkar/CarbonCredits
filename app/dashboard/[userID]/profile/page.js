@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserCircle, CheckCircle, XCircle } from 'lucide-react';
+import { UserCircle, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 function formatDate(dateString) {
@@ -23,6 +23,7 @@ function formatDate(dateString) {
 
 export default function ProfilePage() {
   const { userID } = useParams();
+  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,6 +38,11 @@ export default function ProfilePage() {
     lastLoggedIn: '',
     isVerified: false,
     createdAt: '',
+    transactions: [],
+    tokenisations: [],
+    plantations: [],
+    newTransactions: [],
+    marketplaceListings: [],
   });
 
   useEffect(() => {
@@ -50,13 +56,18 @@ export default function ProfilePage() {
           name: data.fullname || '',
           username: data.username || '',
           email: data.email || '',
-          organization: data.organization || '',
+          organization: data.companyName || '',
           role: data.role || '',
           age: data.age || '',
           walletID: data.walletID || '',
           lastLoggedIn: data.lastLoggedIn || '',
           isVerified: data.isVerified || false,
           createdAt: data.createdAt || '',
+          transactions: data.transactions || [],
+          tokenisations: data.tokenisations || [],
+          plantations: data.plantations || [],
+          newTransactions: data.newTransactions || [],
+          marketplaceListings: data.marketplaceListings || [],
         });
       } catch (err) {
         setError(err.message);
@@ -69,12 +80,11 @@ export default function ProfilePage() {
   }, [userID]);
 
   const handleChange = (e) => {
-    setProfile(prev => ({ ...prev, [e.target.id]: e.target.value }));
+    setProfile((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
   const handleSubmit = async () => {
     try {
-      // Optional: add password validation here
       const res = await axios.put(`/api/dashboard/profile/${userID}`, profile);
       alert('Profile updated!');
     } catch (err) {
@@ -83,21 +93,38 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) return <p className="text-center text-gray-600 mt-16 text-lg">Loading profile...</p>;
-  if (error) return <p className="text-center text-red-600 mt-16 text-lg">Error: {error}</p>;
+  if (loading)
+    return (
+      <p className="text-center text-gray-600 mt-16 text-lg">Loading profile...</p>
+    );
+  if (error)
+    return (
+      <p className="text-center text-red-600 mt-16 text-lg">Error: {error}</p>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 py-16 px-6 md:px-12 flex justify-center">
-      <Card className="w-full max-w-4xl shadow-lg rounded-xl border border-gray-200 bg-white">
+    <div className="min-h-screen bg-gray-100 text-gray-900 py-16 px-6 md:px-12 flex flex-col items-center">
+      {/* Back button */}
+      <div className="w-full max-w-5xl mb-6 cursor-pointer">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+          onClick={() => router.push(`/dashboard/${userID}`)}
+          aria-label="Back to dashboard"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back to Dashboard
+        </Button>
+      </div>
+
+      <Card className="w-full max-w-5xl shadow-lg rounded-xl border border-gray-200 bg-white">
         <CardHeader className="flex items-center gap-5 border-b border-gray-200 px-8 py-6">
           <UserCircle className="w-14 h-14 text-green-800" />
           <div>
             <CardTitle className="text-2xl font-semibold text-gray-900 leading-tight tracking-tight">
               {profile.name}
             </CardTitle>
-            <p className="text-sm text-gray-500 mt-1 font-light">
-              {profile.username}
-            </p>
+            <p className="text-sm text-gray-500 mt-1 font-light">{profile.username}</p>
           </div>
         </CardHeader>
 
@@ -107,11 +134,12 @@ export default function ProfilePage() {
             {[
               { id: 'email', label: 'Email Address', type: 'email' },
               { id: 'organization', label: 'Organization', type: 'text' },
-              { id: 'role', label: 'Role', type: 'text' },
-              { id: 'age', label: 'Age', type: 'number' }
             ].map(({ id, label, type }) => (
               <div key={id} className="flex flex-col">
-                <Label htmlFor={id} className="mb-2 text-gray-700 font-semibold tracking-wide">
+                <Label
+                  htmlFor={id}
+                  className="mb-2 text-gray-700 font-semibold tracking-wide"
+                >
                   {label}
                 </Label>
                 <Input
@@ -160,7 +188,10 @@ export default function ProfilePage() {
                   Verified Account
                 </Label>
                 {profile.isVerified ? (
-                  <CheckCircle className="text-green-600 w-6 h-6" title="Verified" />
+                  <CheckCircle
+                    className="text-green-600 w-6 h-6"
+                    title="Verified"
+                  />
                 ) : (
                   <XCircle className="text-red-500 w-6 h-6" title="Not Verified" />
                 )}
@@ -168,8 +199,168 @@ export default function ProfilePage() {
             </div>
           </section>
 
+          <hr className="border-gray-300" />
 
-          <div className="flex justify-end pt-4 border-t border-gray-300">
+          {/* Transactions */}
+          <section>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Transactions</h3>
+            {profile.transactions.length === 0 ? (
+              <p className="text-gray-600">No transactions found.</p>
+            ) : (
+              profile.transactions.map((transaction, idx) => (
+                <div
+                  key={idx}
+                  className="mb-6 p-4 border rounded-md bg-gray-50"
+                >
+                  <p className="font-semibold">
+                    Date: {formatDate(transaction.date)}
+                  </p>
+                  <div>
+                    <h4 className="font-semibold mt-2">Needs:</h4>
+                    {transaction.needs.length === 0 ? (
+                      <p>No needs recorded.</p>
+                    ) : (
+                      <ul className="list-disc list-inside">
+                        {transaction.needs.map((item, i) => (
+                          <li key={i}>
+                            {item.item} — ${item.amount} at {item.time}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mt-2">Wants:</h4>
+                    {transaction.wants.length === 0 ? (
+                      <p>No wants recorded.</p>
+                    ) : (
+                      <ul className="list-disc list-inside">
+                        {transaction.wants.map((item, i) => (
+                          <li key={i}>
+                            {item.item} — ${item.amount} at {item.time}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </section>
+
+          <hr className="border-gray-300" />
+
+          {/* Tokenisations */}
+          <section>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Tokenisations
+            </h3>
+            {profile.tokenisations.length === 0 ? (
+              <p className="text-gray-600">No tokenisations recorded.</p>
+            ) : (
+              profile.tokenisations.map((token, idx) => (
+                <div
+                  key={idx}
+                  className="mb-4 p-3 border rounded bg-green-50"
+                >
+                  <p>
+                    <b>Source:</b> {token.source || 'N/A'}
+                  </p>
+                  <p>
+                    <b>Carbon Credits:</b> {token.carbonCredits}
+                  </p>
+                  <p>
+                    <b>Tokens Issued:</b> {token.tokensIssued}
+                  </p>
+                  <p>
+                    <b>Issued At:</b> {formatDate(token.issuedAt)}
+                  </p>
+                </div>
+              ))
+            )}
+          </section>
+
+          <hr className="border-gray-300" />
+
+          {/* Plantations */}
+          <section>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Plantations
+            </h3>
+            {profile.plantations.length === 0 ? (
+              <p className="text-gray-600">No plantations recorded.</p>
+            ) : (
+              profile.plantations.map((plant, idx) => (
+                <div
+                  key={idx}
+                  className="mb-4 p-3 border rounded bg-yellow-50"
+                >
+                  <p>
+                    <b>Location:</b> {plant.location}
+                  </p>
+                  <p>
+                    <b>Size in Acres:</b> {plant.sizeInAcres}
+                  </p>
+                  <p>
+                    <b>Surity Level:</b> {plant.surityLevel}
+                  </p>
+                  <p>
+                    <b>Tokens Awarded:</b> {plant.expraTokensAwarded}
+                  </p>
+                  <p>
+                    <b>Created At:</b> {formatDate(plant.createdAt)}
+                  </p>
+                </div>
+              ))
+            )}
+          </section>
+
+          <hr className="border-gray-300" />
+
+          {/* Income & Expenses (newTransactions) */}
+          <section>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Income & Expenses
+            </h3>
+            {profile.newTransactions.length === 0 ? (
+              <p className="text-gray-600">
+                No income/expense transactions recorded.
+              </p>
+            ) : (
+              <table className="min-w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 px-4 py-2">Category</th>
+                    <th className="border border-gray-300 px-4 py-2">Amount</th>
+                    <th className="border border-gray-300 px-4 py-2">Type</th>
+                    <th className="border border-gray-300 px-4 py-2">Date</th>
+                    <th className="border border-gray-300 px-4 py-2">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {profile.newTransactions.map((t, idx) => (
+                    <tr key={idx}>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {t.category || 'N/A'}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">${t.amount}</td>
+                      <td className="border border-gray-300 px-4 py-2 capitalize">
+                        {t.type}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {formatDate(t.date)}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {t.description || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          <div className="flex justify-end pt-6 border-t border-gray-300">
             <Button
               onClick={handleSubmit}
               className="bg-green-700 hover:bg-green-800 text-white px-8 py-3 rounded-md font-semibold shadow-md transition duration-200"

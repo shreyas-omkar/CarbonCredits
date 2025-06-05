@@ -18,6 +18,7 @@ export default function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [companyName, setCompany] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +37,7 @@ export default function Signup() {
       let age = 1;
       const formData = {
         username: username,
+        companyName,
         fullname: name,
         email,
         password,
@@ -95,6 +97,19 @@ export default function Signup() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="company">Company Name</Label>
+              <Input
+                id="company"
+                type="company"
+                placeholder="your_company_name"
+                className="bg-transparent border border-green-600 text-green-100 focus:ring-green-500"
+                required
+                value={companyName}
+                onChange={(e) => setCompany(e.target.value)}
                 disabled={loading}
               />
             </div>

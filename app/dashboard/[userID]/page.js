@@ -169,7 +169,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <header className="flex z-100 justify-between items-center px-6 py-4 border-b border-gray-200 bg-white sticky top-0 z-20">
+        <header className="flex z-40 justify-between items-center px-6 py-4 border-b border-gray-200 bg-white sticky top-0 z-20">
           <h1 className="text-lg font-semibold text-gray-800">{active}</h1>
 
           <DropdownMenu>
@@ -180,7 +180,7 @@ export default function Dashboard() {
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white border border-gray-200">
+            <DropdownMenuContent className="bg-white z-50 border border-gray-200">
               <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">
                 <Link href={`/dashboard/${userID}/profile`}>Profile</Link>
               </DropdownMenuItem>
