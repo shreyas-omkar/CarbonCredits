@@ -33,6 +33,7 @@
     "pdf-parse": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "recharts": "^2.15.3",
     "tailwind-merge": "^3.3.0",
     "tesseract.js": "^6.0.1",
     "thirdweb": "^5.101.1",

@@ -5,37 +5,55 @@ import { useEffect, useRef } from "react";
 
 export default function Home() {
   const iframeRef = useRef(null);
+  const clickForwarderRef = useRef(null);
 
   useEffect(() => {
-    // Wait some time for iframe and model to load,
-    // then simulate a click at center of iframe viewport
-    const timer = setTimeout(() => {
+    const handleClickForward = (e) => {
       const iframe = iframeRef.current;
-      if (!iframe) return;
+      const forwarder = clickForwarderRef.current;
+      if (!iframe || !forwarder) return;
 
-      // Calculate center position of iframe relative to viewport
+      // Prevent recursive dispatch when dispatching synthetic click
+      // We won't dispatch if the element found is the forwarder itself
       const rect = iframe.getBoundingClientRect();
-      const clickX = rect.left + rect.width / 2;
-      const clickY = rect.top + rect.height / 2;
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
 
-      // Create and dispatch a click event at center
-      const clickEvent = new MouseEvent("click", {
-        view: window,
+      // Find the element at center point
+      const el = document.elementFromPoint(centerX, centerY);
+
+      if (!el || forwarder.contains(el)) {
+        // If the element at center is inside forwarder div itself,
+        // don't dispatch to avoid recursion
+        return;
+      }
+
+      // Create and dispatch synthetic click event
+      const event = new MouseEvent("click", {
         bubbles: true,
         cancelable: true,
-        clientX: clickX,
-        clientY: clickY,
+        clientX: centerX,
+        clientY: centerY,
+        view: window,
       });
 
-      document.elementFromPoint(clickX, clickY)?.dispatchEvent(clickEvent);
-    }, 4000); // 4 seconds delay, adjust if needed
+      el.dispatchEvent(event);
+    };
 
-    return () => clearTimeout(timer);
+    const btn = clickForwarderRef.current;
+    if (!btn) return;
+    btn.addEventListener("click", handleClickForward);
+
+    return () => {
+      if (btn && btn.isConnected) {
+        btn.removeEventListener("click", handleClickForward);
+      }
+    };
   }, []);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black text-green-700">
-      {/* Fullscreen Sketchfab embed as background */}
+      {/* Fullscreen Sketchfab iframe */}
       <div className="fixed inset-0 z-10">
         <iframe
           ref={iframeRef}
@@ -50,28 +68,40 @@ export default function Home() {
             width: "100%",
             height: "100%",
             border: "none",
-            transformOrigin: "center center",
-            // You can add scale or position adjustments here if needed
           }}
         />
       </div>
 
-      {/* Black overlay with center hole */}
+      {/* Black overlay with transparent center */}
       <div
+        id="overlay-click-layer"
+        className="pointer-events-none fixed inset-0 z-20"
         style={{
-          position: "fixed",
-          inset: 0,
-          pointerEvents: "none",
-          zIndex: 20,
           backgroundColor: "rgba(0,0,0,0.95)",
-          // Use CSS mask to create a transparent center hole
           WebkitMaskImage: `radial-gradient(circle 500px at center, transparent 0%, black 100%)`,
-          maskImage: `radial-gradient(circle 400px at center, transparent 0%, black 100%)`,
+          maskImage: `radial-gradient(circle 500px at center, transparent 0%, black 100%)`,
         }}
       />
 
-      {/* Foreground Content */}
-      <section className="relative z-30 flex flex-col justify-center items-start min-h-screen max-w-2xl p-6 md:p-12 pointer-events-auto">
+      {/* Transparent forward-click full width/height */}
+      <div
+        ref={clickForwarderRef}
+        id="click-forwarder"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 30,
+          background: "transparent",
+          pointerEvents: "auto",
+          cursor: "pointer",
+        }}
+      />
+
+      {/* Foreground UI */}
+      <section className="relative z-40 flex flex-col justify-center items-start min-h-screen max-w-2xl p-6 md:p-12 pointer-events-auto">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
           Carbon Credits <br /> System
         </h1>
@@ -86,15 +116,7 @@ export default function Home() {
         >
           Get Started
         </Link>
-
-        {/* Attribution links below */}
-        <p
-          className="mt-12 text-xs font-normal text-green-400"
-          style={{ maxWidth: "320px" }}
-        >
-        </p>
       </section>
-
     </main>
   );
 }

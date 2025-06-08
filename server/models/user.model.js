@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   age: { type: Number, required: true },
-  carbonCredits: { type: Number, default: 0 },
+  carbonCredits: { type: mongoose.Schema.Types.Decimal128, default: 0.0 },
   walletID: { type: String, unique: true },
   createdAt: { type: Date, default: Date.now },
   lastLoggedIn: { type: Date, default: Date.now },
@@ -69,6 +69,12 @@ const userSchema = new mongoose.Schema({
 
   // 👇 Original structured transactions
   transactions: [transactionSchema],
+  emissions: [
+  {
+    creditsUsed: { type: Number, required: true },
+    timestamp: { type: Date, default: Date.now },
+  }
+],
 
   // 👇 Simple income/expense tracker
   newTransactions: [{
@@ -90,6 +96,8 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'MarketplaceListing',
   }],
+  lastPing: { type: Date, default: Date.now },
+
 
   tokenisations: [tokenisationSchema],
   plantations: [plantationSchema],

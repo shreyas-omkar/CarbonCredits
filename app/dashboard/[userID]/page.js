@@ -26,6 +26,7 @@ import Link from 'next/link';
 import Marketplace from '@/components/marketplace/page';
 import Tokenise from '@/components/tokenise/page';
 import Plantations from '@/components/plantations/page';
+import CronjobDashboard from '@/components/home/page';
 
 const menuItems = [
   { name: 'Home', icon: Home },
@@ -193,39 +194,7 @@ export default function Dashboard() {
 
         {/* Content Area */}
         <main className="p-8 bg-gray-50 flex-1">
-          {active === 'Home' && (
-            <>
-              <p className="text-gray-600 mb-6 max-w-2xl">
-                Welcome to the Carbon Credits Dashboard. Monitor your carbon credits,
-                manage plantations, and trade tokens responsibly.
-              </p>
-
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-                <Card className="bg-white border border-gray-200 shadow-sm">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">
-                      Current Balance
-                    </h3>
-                    <p className="text-2xl font-bold text-green-700">
-                      {/* Use real data if available */}
-                      {dashboardData.currentBalance ?? '1,245'} CC
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-white border border-gray-200 shadow-sm">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">
-                      Plantations Managed
-                    </h3>
-                    <p className="text-gray-700">
-                      Active plantations: {dashboardData.plantationsManaged ?? 12}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </>
-          )}
-
+          {active === 'Home' && <CronjobDashboard userID={userID} />}
           {active === 'Marketplace' && <Marketplace userID={userID} />}
           {active === 'Tokenise' && <Tokenise userID={userID} />}
           {active === 'Plantations' && <Plantations userID={userID} />}
