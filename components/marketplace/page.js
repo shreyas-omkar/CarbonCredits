@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { LoaderCircle, CheckCircle } from "lucide-react";
+import { LoaderCircle, CheckCircle, PlusCircle } from "lucide-react";
 
 export default function Marketplace({ userID }) {
   const [listings, setListings] = useState([]);
@@ -17,6 +17,7 @@ export default function Marketplace({ userID }) {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [buyingId, setBuyingId] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   const fetchListings = async () => {
     setLoading(true);
@@ -75,6 +76,7 @@ export default function Marketplace({ userID }) {
       setDescription("");
       setQuantity("");
       setPriceCC("");
+      setShowForm(false);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -110,31 +112,34 @@ export default function Marketplace({ userID }) {
   };
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center bg-white text-green-900 overflow-auto px-4 py-10">
-      {/* Background image */}
-      <div className="absolute inset-0 z-10 bg-cover bg-center" />
+    <main className="min-h-screen bg-white px-4 py-10 text-green-900">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Marketplace</h1>
+        <Button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-2 bg-green-800 text-white"
+        >
+          <PlusCircle />
+          {showForm ? "Cancel" : "Add Listing"}
+        </Button>
+      </div>
 
-      <div className="relative z-30 w-full max-w-4xl space-y-10">
-        {/* Create New Listing Card */}
-        <Card className="border-0 bg-white/5 backdrop-blur-md shadow-xl text-green-700 rounded-xl">
+      {showForm && (
+        <Card className="mb-10">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-green-800">
-              Create New Listing
-            </CardTitle>
+            <CardTitle className="text-xl">Create New Listing</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 px-6 sm:px-8">
+          <CardContent className="space-y-4">
             <Input
               placeholder="Title *"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-transparent border border-green-800 text-green-900 focus:ring-green-700"
             />
             <Textarea
               placeholder="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="bg-transparent border border-green-800 text-green-900 focus:ring-green-700"
             />
             <Input
               type="number"
@@ -142,7 +147,6 @@ export default function Marketplace({ userID }) {
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               min={1}
-              className="bg-transparent border border-green-800 text-green-900 focus:ring-green-700"
             />
             <Input
               type="number"
@@ -151,12 +155,11 @@ export default function Marketplace({ userID }) {
               onChange={(e) => setPriceCC(e.target.value)}
               min={0}
               step="0.01"
-              className="bg-transparent border border-green-800 text-green-900 focus:ring-green-700"
             />
             <Button
               onClick={createListing}
               disabled={creating || !title.trim() || !quantity || !priceCC}
-              className="w-full bg-green-800 text-white font-bold hover:bg-green-900 transition"
+              className="w-full bg-green-800 text-white"
             >
               {creating ? (
                 <LoaderCircle className="mr-2 animate-spin" />
@@ -167,72 +170,50 @@ export default function Marketplace({ userID }) {
             </Button>
           </CardContent>
         </Card>
+      )}
 
-        {/* Listings Section */}
-        <Card className="border-0 bg-white/5 backdrop-blur-md shadow-xl text-green-700 rounded-xl">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-green-800">
-              Marketplace Listings
-            </CardTitle>
-          </CardHeader>
-
-{/* oprn */}
-
-          <CardContent className="space-y-6 px-6 sm:px-8">
-  {loading ? (
-    <p className="text-center text-green-700">Loading listings...</p>
-  ) : listings.length === 0 ? (
-    <p className="text-center text-green-700">No listings available.</p>
-  ) : (
-    listings.map((listing) => (
-      <Card
-        key={listing._id}
-        className={`w-full bg-white/10 border border-green-800 rounded-xl p-6 flex justify-between  ${
-          listing.isSold ? "opacity-50" : ""
-        }`}
-      >
-        {/* Left: Title, Description, Quantity */}
-        <div className="flex flex-col space-y-1 text-left flex-grow">
-          <p className="text-xl font-semibold text-green-900">
-            {listing.title}
-          </p>
-          <p className="text-sm text-green-700 truncate">
-            {listing.description || "No description"}
-          </p>
-          <p className="text-sm text-green-700">
-            Qty: {listing.quantity}
-          </p>
+      {loading ? (
+        <p className="text-gray-500 text-center italic mt-10">Loading listings...</p>
+      ) : listings.length === 0 ? (
+        <p className="text-gray-500 text-center italic mt-10">
+          No listings available. Click <b>"Add Listing"</b> to create one.
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {listings.map((listing) => (
+            <Card
+              key={listing._id}
+              className={`border p-4 flex flex-row justify-between px-4 py-6 ${
+                listing.isSold ? "opacity-50" : ""
+              }`}
+            >
+              <div className="flex flex-col w-1/2">
+                <p className="text-2xl font-bold">{listing.title}</p>
+                <p className="text-base text-gray-600 mt-2">{listing.description}</p>
+                <p className="text-lg font-semibold mt-2 text-green-800">Qty: {listing.quantity}</p>
+              </div>
+              <div className="text-right w-1/2">
+                <p className="font-bold text-green-800">{listing.priceCC.toFixed(2)} CC</p>
+                <Button
+                  disabled={buyingId === listing._id || listing.isSold}
+                  onClick={() => buyListing(listing._id)}
+                  className={`mt-2 ${
+                    listing.isSold
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-800 hover:bg-green-900 text-white"
+                  }`}
+                >
+                  {listing.isSold
+                    ? "Sold"
+                    : buyingId === listing._id
+                    ? "Buying..."
+                    : "Buy"}
+                </Button>
+              </div>
+            </Card>
+          ))}
         </div>
-
-        {/* Right: Price and Buy Button */}
-        <div className="flex flex-col items-end justify-center ml-6 min-w-[120px]">
-          <p className="text-lg font-semibold text-green-900">
-            {listing.priceCC.toFixed(2)} CC
-          </p>
-          <Button
-            disabled={buyingId === listing._id || listing.isSold}
-            onClick={() => buyListing(listing._id)}
-            className={`mt-2 font-semibold text-white ${
-              listing.isSold
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-800 hover:bg-green-900"
-            }`}
-          >
-            {listing.isSold
-              ? "Sold"
-              : buyingId === listing._id
-              ? "Buying..."
-              : "Buy"}
-          </Button>
-        </div>
-      </Card>
-    ))
-  )}
-</CardContent>
-
-
-        </Card>
-      </div>
+      )}
     </main>
   );
 }

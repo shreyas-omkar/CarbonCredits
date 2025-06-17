@@ -19,12 +19,6 @@ const tokenisationSchema = new mongoose.Schema({
   tokensIssued: {
     type: Number,
     required: true,
-    validate: {
-      validator: function (value) {
-        return value * 100 === this.carbonCredits;
-      },
-      message: "tokensIssued must be carbonCredits / 100"
-    }
   },
   source: { type: String }, // e.g., "Plantation", "Trade", etc.
   issuedAt: { type: Date, default: Date.now }
@@ -32,20 +26,21 @@ const tokenisationSchema = new mongoose.Schema({
 
 // --- Plantation Tracking ---
 const plantationSchema = new mongoose.Schema({
+  nurseryName: { type: String, default: "Unknown Nursery" },
   location: { type: String, required: true },
-  sizeInAcres: { type: Number, required: true },
+  totalAmount: { type: Number, default: 0 },
+  confidence: { type: Number, min: 0, max: 1, required: true },
   surityLevel: {
     type: String,
     enum: ["Low", "Medium", "High", "Verified"],
     default: "Low"
   },
-  rawData: { // 🔹 Single OCR dump
-    type: String,
-    required: true,
-  },
+  rawData: { type: String, required: true },
+  carbonReducedTons: { type: Number, default: 0 },
   expraTokensAwarded: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
 });
+
 
 // --- User Schema ---
 const userSchema = new mongoose.Schema({

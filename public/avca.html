@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVCA Carbon Credit Certificate</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 20px;
+            background-color: white;
+            color: black;
+            line-height: 1.4;
+        }
+        
+        .certificate {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 3px solid #000;
+            padding: 30px;
+            background: white;
+            position: relative;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .emblem {
+            width: 60px;
+            height: 60px;
+            background: #000;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        
+        .emblem::before {
+            content: "🇮🇳";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+        }
+        
+        .title-main {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            margin: 3px 0;
+            font-weight: bold;
+        }
+        
+        .cert-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-decoration: underline;
+            letter-spacing: 2px;
+        }
+        
+        .cert-number {
+            background: #000;
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 15px 0;
+            display: inline-block;
+        }
+        
+        .content-section {
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            border-bottom: 1px dotted #666;
+            padding-bottom: 5px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            min-width: 150px;
+        }
+        
+        .carbon-amount {
+            text-align: center;
+            background: white;
+            border: 2px solid #000;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .carbon-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+        
+        .carbon-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .project-details {
+            background: #f9f9f9;
+            border: 1px solid #000;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .verification-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin: 25px 0;
+            background: #fff;
+        }
+        
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #000;
+        }
+        
+        .signature-box {
+            text-align: center;
+            width: 45%;
+        }
+        
+        .signature-line {
+            border-bottom: 2px solid #000;
+            height: 50px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .signature-line::after {
+            content: "(Signed)";
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-style: italic;
+            font-size: 12px;
+        }
+        
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            background: #000;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .qr-code::before {
+            content: "QR";
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #000;
+        }
+        
+        .security-features {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 10px;
+            background: #000;
+            color: white;
+            padding: 5px;
+        }
+        
+        @media print {
+            body { margin: 0; padding: 10px; }
+            .certificate { border: 2px solid #000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <div class="security-features">SEC: AVCA-2025</div>
+        
+        <div class="header">
+            <div class="emblem"></div>
+            <div class="title-main">REPUBLIC OF INDIA</div>
+            <div class="subtitle">MINISTRY OF ENVIRONMENT, FOREST AND CLIMATE CHANGE</div>
+            <div class="subtitle">ACCREDITED VERIFIABLE CARBON AUTHORITY (AVCA)</div>
+            <div class="cert-title">CARBON CREDIT CERTIFICATE</div>
+        </div>
+        
+        <div class="content-section">
+            <div class="cert-number">Certificate No.: AVCA/IND/2025/014283</div>
+            
+            <div class="info-row">
+                <span class="info-label">Date of Issue:</span>
+                <span>09 June 2025</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Entity Name:</span>
+                <span>Shreyas Hegde Industries</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Entity ID:</span>
+                <span>SHG-AVCA-2025-7781</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Location:</span>
+                <span>Bengaluru, Karnataka, India</span>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <p style="text-align: justify; margin: 15px 0;">
+                This is to certify that the above-mentioned entity has successfully offset carbon emissions through verifiable environmental efforts under the Indian National Carbon Credit Scheme, in alignment with the guidelines prescribed by the AVCA and the UNFCCC.
+            </p>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0; padding: 15px; border: 1px solid #000;">
+            <p style="margin: 5px 0; font-weight: bold; font-size: 16px;">TOTAL CARBON CREDITS AWARDED</p>
+            <p style="margin: 10px 0; font-weight: bold; font-size: 24px;">1720 Metric Tons CO₂ Equivalent</p>
+        </div>
+        
+        <div class="project-details">
+            <h4 style="margin-top: 0; text-decoration: underline;">PROJECT DETAILS:</h4>
+            <div class="info-row">
+                <span class="info-label">Project Type:</span>
+                <span>Agroforestry & Renewable Energy Hybrid Project</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Duration Audited:</span>
+                <span>January 2024 – March 2025</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Verified by:</span>
+                <span>National Green Tribunal (NGT) under AVCA Tier 2 Protocol</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Methodology:</span>
+                <span>AVCA-CDM-AFF-001 & AVCA-RE-SOLAR-003</span>
+            </div>
+        </div>
+        
+        <div class="verification-section">
+            <h4 style="margin-top: 0;">VERIFICATION AND AUTHORIZATION</h4>
+            <p style="margin: 10px 0;">
+                This certificate is issued under the authority of AVCA, Government of India, and is valid for national and international carbon trade as per Section 14C of the Indian Climate Responsibility Act, 2022.
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <div>
+                    <strong>Secure Certificate Code:</strong> AVCA-IND-014283-TGT<br>
+                    <strong>Verify at:</strong> https://avca.india.gov.in/verify
+                </div>
+                <div class="qr-code"></div>
+            </div>
+        </div>
+        
+        <div class="signature-area">
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div><strong>Dr. Meera Kulkarni</strong></div>
+                <div>Director General – AVCA</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div><strong>Official Seal</strong></div>
+                <div>AVCA Authentication</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <strong>IMPORTANT:</strong> This certificate is machine-readable and contains embedded security features.<br>
+            Any unauthorized reproduction or tampering is punishable under Indian law.<br>
+            For verification, visit: www.avca.india.gov.in | Helpline: 1800-11-AVCA
+        </div>
+    </div>
+</body>
+</html>
