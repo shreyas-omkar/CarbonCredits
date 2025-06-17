@@ -84,7 +84,7 @@ export default function Home() {
       />
 
       {/* Transparent forward-click full width/height */}
-      <div
+      {/* <div
         ref={clickForwarderRef}
         id="click-forwarder"
         style={{
@@ -98,7 +98,7 @@ export default function Home() {
           pointerEvents: "auto",
           cursor: "pointer",
         }}
-      />
+      /> */}
 
       {/* Foreground UI */}
       <section className="relative z-40 flex flex-col justify-center items-start min-h-screen max-w-2xl p-6 md:p-12 pointer-events-auto">

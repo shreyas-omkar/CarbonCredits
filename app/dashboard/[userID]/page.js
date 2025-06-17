@@ -7,19 +7,12 @@ import {
   Sparkles,
   UserCircle,
   Menu,
-  ChevronDown,
   RadioTower,
 } from 'lucide-react';
 
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useParams, useRouter } from 'next/navigation';
@@ -31,8 +24,14 @@ import Plantations from '@/components/plantations/page';
 import CronjobDashboard from '@/components/home/page';
 
 import {
-  PieChart, Pie, Cell,
-  BarChart, Bar, XAxis, YAxis, Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -51,7 +50,7 @@ function SidebarButtons({ active, setActive }) {
     <Button
       key={name}
       variant="ghost"
-      className={`w-full justify-start gap-3 rounded-2xl px-4 py-2 text-sm transition ${
+      className={`w-full justify-start gap-3 rounded-sm px-4 py-2 text-sm transition ${
         active === name
           ? 'bg-green-100 text-green-700 font-medium'
           : 'text-gray-700 hover:bg-gray-100'
@@ -159,7 +158,7 @@ export default function Dashboard() {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="rounded-2xl border border-gray-200"><CardContent className="p-4"><h2 className="text-sm text-gray-500">Remaining Carbon Credits Tokens</h2><p className="text-2xl font-bold">{ parseFloat(totalTokens - emissionUsed.toFixed(6))}</p></CardContent></Card>
+          <Card className="rounded-2xl border border-gray-200"><CardContent className="p-4"><h2 className="text-sm text-gray-500">Remaining Carbon Credits Tokens</h2><p className="text-2xl font-bold">{parseFloat(totalTokens - emissionUsed.toFixed(6))}</p></CardContent></Card>
           <Card className="rounded-2xl border border-gray-200"><CardContent className="p-4"><h2 className="text-sm text-gray-500">Tokens Used</h2><p className="text-2xl font-bold">{emissionUsed}</p></CardContent></Card>
           <Card className="rounded-2xl border border-gray-200"><CardContent className="p-4"><h2 className="text-sm text-gray-500">Carbon Credit Tokens Issued</h2><p className="text-2xl font-bold">{totalTokens}</p></CardContent></Card>
           <Card className="rounded-2xl border border-gray-200"><CardContent className="p-4"><h2 className="text-sm text-gray-500">Total Plantations</h2><p className="text-2xl font-bold">{plantationCount}</p></CardContent></Card>
@@ -218,21 +217,45 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Skeleton className="w-1/2 h-6 rounded-full" />
+        <Skeleton className="w-1/2 h-6 rounded-lg" />
       </div>
     );
   }
 
-  return (
-    <div className="flex min-h-screen bg-white text-gray-900">
-      <aside className="hidden md:flex flex-col w-64 border-r border-gray-200 px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-10 text-green-700">CarbonDash</h2>
+    return (
+    <div className="flex bg-white text-gray-900">
+      {/* Fixed Sidebar */}
+      <aside className="hidden md:flex fixed h-screen flex-col w-64 border-r border-gray-200 px-6 py-8 bg-white z-30">
+        <h2 className="text-2xl font-semibold mb-10 text-green-700">Eco Mint</h2>
         <nav className="space-y-2">
           <SidebarButtons active={active} setActive={setActive} />
         </nav>
-        <div className="mt-auto text-xs text-gray-400 pt-10">Dashboard v1.0</div>
+
+        {/* Profile + Logout */}
+        <div className="mt-auto pt-6 border-t border-gray-200 space-y-2">
+          <Button
+            variant="ghost"
+            className="w-full flex items-center gap-2 justify-start text-sm text-gray-700 hover:bg-gray-100 px-2"
+            asChild
+          >
+            <Link href={`/dashboard/${userID}/profile`}>
+              <UserCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">
+                {dashboardData?.username || 'Loading...'}
+              </span>
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-sm text-red-600 hover:bg-red-100 px-2"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
       </aside>
 
+      {/* Mobile Sidebar */}
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" className="md:hidden fixed top-4 left-4 z-50">
@@ -242,38 +265,44 @@ export default function Dashboard() {
         <SheetContent side="left" className="bg-white border-r border-gray-200">
           <div className="pt-10 space-y-2">
             <SidebarButtons active={active} setActive={setActive} />
+            <div className="mt-8 border-t pt-4 space-y-2">
+              <Button
+                variant="ghost"
+                className="w-full flex items-center gap-2 justify-start text-sm text-gray-700 hover:bg-gray-100 px-2"
+                asChild
+              >
+                <Link href={`/dashboard/${userID}/profile`}>
+                  <UserCircle className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {dashboardData?.username || 'Loading...'}
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm text-red-600 hover:bg-red-100 px-2"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
 
-      <div className="flex-1 flex flex-col">
+      {/* Main Content Area (margin-left for fixed sidebar) */}
+      <div className="ml-0 md:ml-64 flex-1 flex flex-col h-screen overflow-hidden">
         <header className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white sticky top-0 z-20">
           <h1 className="text-lg font-semibold text-gray-800">{active}</h1>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 text-gray-700">
-                <UserCircle className="h-6 w-6" />
-                <span>{dashboardData?.username || 'Loading...'}</span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white z-50 border border-gray-200">
-              <DropdownMenuItem>
-                <Link href={`/dashboard/${userID}/profile`}>Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </header>
 
-        <main className="p-8 bg-gray-50 flex-1">
+        <div className="flex-1 overflow-y-auto p-8 bg-gray-50">
           {active === 'Home' && <VisualDashboard />}
           {active === 'Sensor Data Dashboard' && <CronjobDashboard userID={userID} />}
           {active === 'Marketplace' && <Marketplace userID={userID} />}
           {active === 'Tokenise' && <Tokenise userID={userID} />}
           {active === 'Plantations' && <Plantations userID={userID} />}
-        </main>
+        </div>
       </div>
     </div>
   );
