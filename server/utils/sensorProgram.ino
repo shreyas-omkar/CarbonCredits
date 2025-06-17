@@ -6,7 +6,7 @@ const char* ssid = "Name"; //WIFI NAME
 const char* password = "Pass"; //WIFI PASS
 
 // ✅ Use the hosted HTTPS endpoint
-const char* serverName = "https://carbon-credits-zeta.vercel.app/api/dashboard/cronjob/[userID]";
+const char* serverName = "https://ecomintcarbon.vercel.app/api/dashboard/cronjob/[userID]";
 
 WiFiClientSecure client;
 
